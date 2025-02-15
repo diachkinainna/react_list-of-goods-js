@@ -17,99 +17,82 @@ export const goodsFromServer = [
   'Garlic',
 ];
 
-const BUTTON_SORT_ALPHABETICALLY = 'Sort alphabetically';
-const BUTTON_SORT_BY_LENGTH = 'Sort by length';
-const BUTTON_REVERSE = 'Reverse';
-const BUTTON_RESET = 'Reset';
+const SORT_FIELD_ALPHABETICALLY = 'Sort alphabetically';
+const SORT_FIELD_BY_LENGTH = 'Sort by length';
+
+function getPrepearedGoods(goods, { sortField, reversed }) {
+  let prepearedGoods = [...goods];
+
+  if (sortField) {
+    prepearedGoods.sort((good1, good2) => {
+      switch (sortField) {
+        case SORT_FIELD_ALPHABETICALLY:
+          return good1.localeCompare(good2);
+
+        case SORT_FIELD_BY_LENGTH:
+          return good1.length - good2.length;
+
+        default:
+          return 0;
+      }
+    });
+  }
+
+  if (reversed) {
+    prepearedGoods = prepearedGoods.reverse();
+  }
+
+  return prepearedGoods;
+}
 
 export const App = () => {
-  const [goods, setGoods] = useState([...goodsFromServer]);
   const [reversed, setReversed] = useState(false);
   const [sortField, setSortField] = useState('');
-
-  function updateGoods(buttonName) {
-    switch (buttonName) {
-      case BUTTON_SORT_ALPHABETICALLY:
-        setSortField(buttonName);
-
-        if (reversed) {
-          return setGoods(
-            [...goods]
-              .sort((good1, good2) => good1.localeCompare(good2))
-              .reverse(),
-          );
-        }
-
-        return setGoods(
-          [...goods].sort((good1, good2) => good1.localeCompare(good2)),
-        );
-
-      case BUTTON_SORT_BY_LENGTH:
-        setSortField(buttonName);
-
-        if (reversed) {
-          return setGoods(
-            [...goods].sort((good1, good2) => good2.length - good1.length),
-          );
-        }
-
-        return setGoods(
-          [...goods].sort((good1, good2) => good1.length - good2.length),
-        );
-
-      case BUTTON_REVERSE:
-        return setGoods([...goods].reverse());
-
-      default:
-        return 0;
-    }
-  }
+  const goods = getPrepearedGoods(goodsFromServer, { sortField, reversed });
 
   return (
     <div className="section content">
       <div className="buttons">
         <button
           type="button"
-          onClick={() => updateGoods(BUTTON_SORT_ALPHABETICALLY)}
+          onClick={() => setSortField(SORT_FIELD_ALPHABETICALLY)}
           className={cn('button', 'is-info', {
-            'is-light': sortField !== BUTTON_SORT_ALPHABETICALLY,
+            'is-light': sortField !== SORT_FIELD_ALPHABETICALLY,
           })}
         >
-          {BUTTON_SORT_ALPHABETICALLY}
+          {SORT_FIELD_ALPHABETICALLY}
         </button>
 
         <button
           type="button"
-          onClick={() => updateGoods(BUTTON_SORT_BY_LENGTH)}
+          onClick={() => setSortField(SORT_FIELD_BY_LENGTH)}
           className={cn('button', 'is-success', {
-            'is-light': sortField !== BUTTON_SORT_BY_LENGTH,
+            'is-light': sortField !== SORT_FIELD_BY_LENGTH,
           })}
         >
-          {BUTTON_SORT_BY_LENGTH}
+          {SORT_FIELD_BY_LENGTH}
         </button>
 
         <button
           type="button"
           onClick={() => {
-            updateGoods(BUTTON_REVERSE);
             setReversed(!reversed);
           }}
           className={cn('button', 'is-warning', { 'is-light': !reversed })}
         >
-          {BUTTON_REVERSE}
+          Reverse
         </button>
 
         {(sortField !== '' || reversed) && (
           <button
             type="button"
             onClick={() => {
-              setGoods([...goodsFromServer]);
               setSortField('');
               setReversed(false);
             }}
             className="button is-danger is-light"
           >
-            {BUTTON_RESET}
+            Reset
           </button>
         )}
       </div>
