@@ -36,7 +36,7 @@ export const App = () => {
           return setGoods(
             [...goods]
               .sort((good1, good2) => good1.localeCompare(good2))
-              .toReversed(),
+              .reverse(),
           );
         }
 
@@ -58,10 +58,10 @@ export const App = () => {
         );
 
       case BUTTON_REVERSE:
-        return setGoods([...goods].toReversed());
+        return setGoods([...goods].reverse());
 
       default:
-        return '';
+        return 0;
     }
   }
 
